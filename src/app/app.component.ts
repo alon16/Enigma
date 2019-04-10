@@ -150,7 +150,7 @@ export class AppComponent {
 onChange(seleccionado,rotor){
 
   if(rotor=='r3'){
-    this.cr3=this.girosPorSeleccion(this.con3.indexOf(seleccionado),this.cr3);
+    this.cr3=this.girosPorSeleccion(this.con3.indexOf(seleccionado),this.cr3,rotor);
     //Vuelta es el contador o controlador de las vueltas del rotor
     this.Vuelta3=seleccionado;
     //Actualizar valor del select o comboBox
@@ -158,31 +158,30 @@ onChange(seleccionado,rotor){
     for(let i in this.input){
       aux.push(this.cr3[i].out);
     }
-    this.con3=aux;
   }
   else if(rotor=='r2'){
-    this.cr2=this.girosPorSeleccion(this.con2.indexOf(seleccionado),this.cr2);
+    this.cr2=this.girosPorSeleccion(this.con2.indexOf(seleccionado),this.cr2,rotor);
     this.Vuelta2=seleccionado;
     //Actualizar valor del select o comboBox
     let aux: string[]= new Array();
     for(let i in this.input){
       aux.push(this.cr2[i].out);
     }
-    this.con2=aux;
   }
   else{
-    this.cr1=this.girosPorSeleccion(this.con.indexOf(seleccionado),this.cr1);
+    this.cr1=this.girosPorSeleccion(this.con.indexOf(seleccionado),this.cr1,rotor);
     this.Vuelta1=seleccionado;
     //Actualizar valor del select o comboBox
     let aux: string[]= new Array();
     for(let i in this.input){
       aux.push(this.cr1[i].out);
     }
-    this.con=aux;
+
   }
 
+
 }
-girosPorSeleccion(seleccionado,arrayRotor):val[]{
+girosPorSeleccion(seleccionado,arrayRotor,r):val[]{
   let r_aux: val[]=new Array();
   let j=seleccionado;
   for(let i=0;i<=(25-seleccionado);i++){
@@ -192,17 +191,31 @@ girosPorSeleccion(seleccionado,arrayRotor):val[]{
     r_aux.push(arrayRotor[i]);
     arrayRotor=r_aux;
     console.log(r_aux);
+    this.actualizandoArray(r,arrayRotor);
     return arrayRotor;
 }
-giraRotor(rotor):val[]{
+giraRotor(rotor,r):val[]{
   let aux1:val;
   aux1=rotor[0];
-
   for(let i=0;i<25;i++){
     rotor[i]=rotor[i+1];
   }
   rotor[25]=aux1;
+  this.actualizandoArray(r,rotor);
   return rotor;
+}
+actualizandoArray(r,rotor){
+  let aux: string[]= new Array();
+  //Actualizando array de rotores
+  for(let i in this.input){
+    aux.push(rotor[i].out);
+  }
+  if(r=="r3")
+  this.con3=aux;
+  else if (r=="r2")
+  this.con2=aux;
+  else
+  this.con=aux;
 }
 recorriendo(valor){
   let x1;
@@ -263,30 +276,26 @@ recorriendo(valor){
 }
 onKey(e){
   if(e.key!= "Backspace"){
-    if(this.Vuelta3 != 25 ){
-      this.cr3=this.giraRotor(this.cr3);
-      //Actualizar valor del select o comboBox
-      let aux: string[]= new Array();
-      for(let i in this.input){
-        aux.push(this.cr3[i].out);
-      }
-      this.con3=aux;
-      this.r3.setValue(this.con3);
+    if(this.Vuelta3 < 25 ){
+      this.cr3=this.giraRotor(this.cr3,"r3");
       //Se va a llamr a la funcion de recorrido enviandole el valor del rotor de la letra que se tecleo
       this.recorriendo(this.cr3[this.input.indexOf(e.key.toUpperCase())].c2);
       this.Vuelta3++;
     }
-    else if(this.Vuelta2 != 25){
-      this.cr2=this.giraRotor(this.cr2);
+    else if(this.Vuelta2 < 25){
+      this.cr2=this.giraRotor(this.cr2,"r2");
       this.recorriendo(this.cr2[this.input.indexOf(e.key.toUpperCase())].c2);
       this.Vuelta2++;
       this.Vuelta3=0;
     }
-    else if(this.Vuelta1 != 25){
-      this.cr1=this.giraRotor(this.cr1);
+    else if(this.Vuelta1 < 25 ){
+      this.cr1=this.giraRotor(this.cr1,"r1");
+      this.cr2=this.giraRotor(this.cr2,"r2");
+      this.cr3=this.giraRotor(this.cr3,"r3");
       this.recorriendo(this.cr1[this.input.indexOf(e.key.toUpperCase())].c2);
       this.Vuelta1++;
       this.Vuelta2=0;
+      this.Vuelta3=0;
     }
   }
 
