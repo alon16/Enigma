@@ -168,6 +168,7 @@ onChange(seleccionado,rotor){
       aux.push(this.cr2[i].out);
     }
   }
+  
   else{
     this.cr1=this.girosPorSeleccion(this.con.indexOf(seleccionado),this.cr1,rotor);
     this.Vuelta1=seleccionado;
