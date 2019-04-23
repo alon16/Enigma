@@ -16,14 +16,25 @@ export interface val {
 })
 export class AppComponent {
   title = 'Enigma';
+  //Creacion de Variables a utilizar
+  //Array input, en general este lo utilizare para mostrar la salida final del rotor, es decir letra cifrada o noCifrada
   input: string[]=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+  //Arrays qu se asignaran al Select(Combo Box)del html, los cuales se muestran en la vista
   con:string[]=this.input;
   con2:string[]= this.con;
   con3: string[]=this.con;
+  //Selects
+    r1 = new FormControl('');
+    r2 = new FormControl('');
+    r3 = new FormControl('');
+  //inputs
+    letra= new FormControl('');
+    respuesta= new FormControl('');
+  //Contadores que ayudan controlar cuando dejaran de girar X rotor
   Vuelta1=0;
   Vuelta2=0;
   Vuelta3=0;
-
+//Array que contiene los valores del Reflejo de maquina Enigma
   reflector: reflejo[]=[
     {i:"A",b:"Y"},
     {i:"B",b:"R"},
@@ -54,14 +65,7 @@ export class AppComponent {
 
   ];
 
-//Selects
-  r1 = new FormControl('');
-  r2 = new FormControl('');
-  r3 = new FormControl('');
-  //inputs
-  letra= new FormControl('');
-  respuesta= new FormControl('');
-//Valores de los rotores
+//Arrays que contienen los valores de los rotores
   cr1: val[]=[
     {c1:'A',c2:'E',out:'A'},
     {c1:'B',c2:'K',out:'B'},
@@ -147,19 +151,24 @@ export class AppComponent {
         {c1:'Z',c2:'O',out:'Z'},
 
         ];
+//Evento que se producira cuando el usuario selleccione alguna letra del Select
 onChange(seleccionado,rotor){
-
+/*Se recibe la letra seleccionada  en el Select la cual corresponde a la letra de X rotor
+Asi tambien, el nombre del rotor que fue seleccionado, para identificar cual es el que se debe actualizar*/
   if(rotor=='r3'){
+    //Se manda a llamar a la funcion girosPorSeleccion pasandole la posicion letra seleccionada,el array con los valores del rotor 3 y el nombre de rotor a actualizar
     this.cr3=this.girosPorSeleccion(this.con3.indexOf(seleccionado),this.cr3,rotor);
     //Vuelta es el contador o controlador de las vueltas del rotor
     this.Vuelta3=seleccionado;
-    //Actualizar valor del select o comboBox
+    //Actualizar valor del select o comboBox ya que el rotor 3 fue modificado
     let aux: string[]= new Array();
     for(let i in this.input){
       aux.push(this.cr3[i].out);
     }
   }
   else if(rotor=='r2'){
+    //Se manda a llamar a la funcion girosPorSeleccion pasandole la posicion de la letra seleccionada,el array con los valores del rotor 2 y el nombre de rotor a actualizar
+
     this.cr2=this.girosPorSeleccion(this.con2.indexOf(seleccionado),this.cr2,rotor);
     this.Vuelta2=seleccionado;
     //Actualizar valor del select o comboBox
@@ -168,8 +177,9 @@ onChange(seleccionado,rotor){
       aux.push(this.cr2[i].out);
     }
   }
-  
+
   else{
+    //Se manda a llamar a la funcion girosPorSeleccion pasandole la posicion de la letra seleccionada,el array con los valores del rotor 1 y el nombre de rotor a actualizar
     this.cr1=this.girosPorSeleccion(this.con.indexOf(seleccionado),this.cr1,rotor);
     this.Vuelta1=seleccionado;
     //Actualizar valor del select o comboBox
@@ -183,25 +193,35 @@ onChange(seleccionado,rotor){
 
 }
 girosPorSeleccion(seleccionado,arrayRotor,r):val[]{
+  //r_aux array que contendra los valores actualizados del rotor, una vez se realizen los giros
+
   let r_aux: val[]=new Array();
   let j=seleccionado;
+
   for(let i=0;i<=(25-seleccionado);i++){
+    //Guardando los valores al principio del array r_aux partiendo de la posicion seleccionada del arrayRotor hasta el final de este
     r_aux.push(arrayRotor[j++]);
+    /*por ejemplo, se selecciona la letra C, supongamos que el rotor esta iniciado en A y  que C se encuentra en la posicion 2,
+    la Variable J valdria 2, Entonces se empezarian a guardar desde C hasta Z
+    */
   }
   for(let i=0;i<=seleccionado-1;i++)
+  //Guardando los primeros valores del arrayRotor y colocandolos al final de r_aux
     r_aux.push(arrayRotor[i]);
     arrayRotor=r_aux;
-    console.log(r_aux);
+    //Se actualiza el array que se utiliza en el Select ya con sus valores movidos, para que Los selects muestren las letras en sus nuevas posiciones
     this.actualizandoArray(r,arrayRotor);
     return arrayRotor;
 }
 giraRotor(rotor,r):val[]{
   let aux1:val;
   aux1=rotor[0];
+  //Giros que s dan por cada letra que se ingresa a cifrar
   for(let i=0;i<25;i++){
     rotor[i]=rotor[i+1];
   }
   rotor[25]=aux1;
+  //Actualizando el array que esta con El Select, para que se muestren las letras en sus nuevas posiciones
   this.actualizandoArray(r,rotor);
   return rotor;
 }
@@ -219,12 +239,13 @@ actualizandoArray(r,rotor){
   this.con=aux;
 }
 recorriendo(valor){
+  //Valor del rotor correspondiente a la letra que se tecleo
   let x1;
   let x2;
   let x3;
   let valorReflejo;
   //En x2 se guarda posicion y en x1 se guarda valor
-                    //IDA
+                    //RECORRIDO DE IDA
      x1=valor;
      for(let i in this.input){
         //inicio de busqueda por valor
@@ -233,6 +254,7 @@ recorriendo(valor){
           x2=i;  }
         }
         //Segundo Rotor
+        //Actualizando x1 sacando la letra correspondiente a la posicion que se obtuvo anteriormente
         x1=this.cr2[x2].c2;
       for(let i in this.input){
           //inicio de busqueda por valor
@@ -240,6 +262,8 @@ recorriendo(valor){
             //se asigna la posicion
             x2=i;}
           }
+          //Actualizando x1 sacando la letra correspondiente a la posicion que se obtuvo anteriormente
+
           x1=this.cr1[x2].c2;
       for(let i in this.input){
             //inicio de busqueda por valor
@@ -254,32 +278,43 @@ recorriendo(valor){
             //se asigna posicion
             valorReflejo=i;}
             }
-                //Vuelta
+                //RECORRIDO DE REGRESO
+      //Actualizando x1 sacando la letra correspondiente a la posicion que se obtuvo anteriormente
+
         x1=this.cr1[valorReflejo].out
         for(let i in this.cr1){
+          //Sacando inversa del reflector
           if(x1==this.cr1[i].c2){
             //Se asigna posicion
             x2=i;}
         }
+        //Actualizando x1 sacando la letra correspondiente a la posicion que se obtuvo anteriormente
+
         x1=this.cr2[x2].out;
         for(let i in this.cr2){
           if(x1==this.cr2[i].c2){
             //Se asigna posicion
             x2=i;}
         }
+        //Actualizando x1 sacando la letra correspondiente a la posicion que se obtuvo anteriormente
+        
         x1=this.cr3[x2].out;
         for(let i in this.cr3){
           if(x1==this.cr3[i].c2){
             //Se asigna posicion
             x2=i;}
         }
+        //Valor de la letra cifrada
         this.respuesta.setValue(this.respuesta.value+this.input[x2]);
 }
 onKey(e){
+  //Se verifica si no tecleo la letra borrar
   if(e.key!= "Backspace"){
+    //Asegurandose que el rotor 3 aun no ha rotado 25 veces
     if(this.Vuelta3 < 25 ){
+      //Se gira el rotor
       this.cr3=this.giraRotor(this.cr3,"r3");
-      //Se va a llamr a la funcion de recorrido enviandole el valor del rotor de la letra que se tecleo
+      //Se va a llamar a la funcion de recorrido enviandole el valor del rotor de la letra que se tecleo
       this.recorriendo(this.cr3[this.input.indexOf(e.key.toUpperCase())].c2);
       this.Vuelta3++;
     }
